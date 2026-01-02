@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bay Group Media | Modern Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-reveal {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out, opacity 0.2s ease;
+        }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+
+    <!-- HEADER -->
+    <header id="main-header" class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300 h-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="flex justify-between items-center h-full">
+                <div class="flex-shrink-0">
+                    <a href="#/" class="text-2xl font-bold text-indigo-900 tracking-tighter group">
+                        BAY GROUP <span class="text-slate-400 font-light group-hover:text-indigo-500 transition-colors">MEDIA</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-6 items-center">
+                    <a href="#/" class="nav-link text-sm font-semibold px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-slate-50 text-slate-600 hover:text-indigo-900" data-path="/">Home</a>
+                    
+                    <div class="relative h-full flex items-center group/dropdown" id="services-dropdown-trigger">
+                        <a href="#/services" class="flex items-center text-sm font-semibold px-3 py-1.5 rounded-lg transition-all duration-300 transform scale-100 hover:scale-[1.03] hover:bg-indigo-50/50 text-slate-600 hover:text-indigo-900">
+                            Services
+                            <svg class="ml-1.5 w-3.5 h-3.5 transition-transform duration-300 group-hover/dropdown:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        
+                        <div class="absolute left-0 top-[80%] hidden group-hover/dropdown:block w-64 bg-white border border-slate-100 rounded-b-xl shadow-2xl py-3 z-50 animate-reveal">
+                            <div id="dropdown-items"></div>
+                            <div class="border-t border-slate-50 mt-2 pt-2">
+                                <a href="#/services" class="block px-5 py-3 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors">View All Services</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#/our-magazines" class="nav-link text-sm font-semibold px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-slate-50 text-slate-600 hover:text-indigo-900" data-path="/our-magazines">Our Magazines</a>
+                    
+                    <a href="#/contact" class="ml-4 px-6 py-2.5 bg-indigo-900 text-white rounded-full hover:bg-indigo-800 hover:shadow-indigo-900/20 hover:shadow-xl transition-all text-sm font-bold active:scale-95">
+                        Get in Touch
+                    </a>
+                </nav>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-toggle" class="text-slate-600 hover:text-indigo-900 p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menu-icon" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 py-6 px-6 space-y-4 shadow-xl">
+            <a href="#/" class="block text-lg font-semibold text-slate-800 mobile-nav-link">Home</a>
+            <div class="space-y-3">
+                <a href="#/services" class="text-indigo-900 font-black text-xs uppercase tracking-widest block mobile-nav-link">Services</a>
+                <div id="mobile-services-links" class="space-y-2"></div>
+            </div>
+            <a href="#/our-magazines" class="block text-lg font-semibold text-slate-800 mobile-nav-link">Our Magazines</a>
+            <a href="#/contact" class="block py-4 text-center bg-indigo-900 text-white rounded-2xl font-bold shadow-lg shadow-indigo-900/20 mobile-nav-link">Contact Us</a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div id="view-container"></div>
+
+    <!-- FOOTER -->
+    <footer class="bg-indigo-950 text-slate-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-white text-xl font-bold mb-6">BAY GROUP MEDIA</h3>
+                    <p class="max-w-md mb-8 leading-relaxed">
+                        Based in Seabrook, TX, we are the premier media agency serving the Houston Bay Area for over 17 years. We specialize in high-end publications, video production, and strategic marketing.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition">
+                            <span class="sr-only">YouTube</span>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.5 6.2c-.3-1.1-1.1-1.9-2.2-2.2C19.3 3.5 12 3.5 12 3.5s-7.3 0-9.3.5c-1.1.3-1.9 1.1-2.2 2.2C0 8.2 0 12.3 0 12.3s0 4.1.5 6.1c.3 1.1 1.1 1.9 2.2 2.2 2 1 9.3 1 9.3 1s7.3 0 9.3-1c1.1-.3 1.9-1.1 2.2-2.2.5-2 1-6.1.5-6.1s0-4.1-.5-6.1zM9.5 15.6V9l6.5 3.3-6.5 3.3z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-6">Quick Links</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#/" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#/our-magazines" class="hover:text-white transition">Our Magazines</a></li>
+                        <li><a href="#/services/media-kit" class="hover:text-white transition">Media Kit</a></li>
+                        <li><a href="#/contact" class="hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-6 text-indigo-100">Contact Us</h4>
+                    <address class="not-italic space-y-4 text-sm">
+                        <p>P.O. Box 1032<br />Seabrook, TX 77586</p>
+                        <p class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            281 474 5875
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            info@baygroupmedia.com
+                        </p>
+                    </address>
+                </div>
+            </div>
+
+            <div class="mt-16 pt-8 border-t border-slate-800 text-sm flex flex-col md:flex-row justify-between items-center">
+                <p>&copy; 2025 Bay Group Media. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APP LOGIC -->
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        // --- CONSTANTS ---
+        const MAGAZINES = [
+            { id: 'best-practices', title: 'Best Practices Quarterly', description: 'Promoting world-class healthcare and medical professionals in the Bay Area Houston and Galveston County.', imageUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=2070&auto=format&fit=crop', siteUrl: '#' },
+            { id: 'bay-area-houston', title: 'Bay Area Houston Magazine', description: 'The premier information source and lifestyle publication for Houston’s vibrant Bay Area community.', imageUrl: 'https://images.unsplash.com/photo-1514361892635-6b07e31e75f9?q=80&w=2070&auto=format&fit=crop', siteUrl: '#' },
+            { id: 'gulf-coast-mariner', title: 'Gulf Coast Mariner', description: 'Celebrating the coastal lifestyle: boating, yachting, sport fishing, and the maritime industry.', imageUrl: 'https://images.unsplash.com/photo-1544551763-47a0159f963f?q=80&w=2070&auto=format&fit=crop', siteUrl: '#' }
+        ];
+
+        const SERVICES = [
+            { id: 'video-production', name: 'Video Production', path: '#/services/video-production', description: 'Cinematic storytelling for your brand.', longDescription: 'Our highly trained filmmaking professionals specialize in cinematic storytelling that elevates your brand beyond the screen. We create high-impact web commercials and documentaries...', features: ['High-Impact Web Commercials', 'Cinematic Documentary Styles', '4K Aerial Drone Cinematography'], imageUrl: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop' },
+            { id: 'graphic-design', name: 'Graphic Design', path: '#/services/graphic-design', description: 'World-class visual communication.', longDescription: 'At Bay Group Media, we believe that world-class design is the cornerstone of effective communication. Our high-end graphic design services ensure brand consistency...', features: ['Logo & Brand Identity', 'Editorial & Magazine Layout', 'Custom Digital Asset Creation'], imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=2071&auto=format&fit=crop' },
+            { id: 'print-advertising', name: 'Print Advertising', path: '#/services/print-advertising', description: 'High-gloss exposure in premier publications.', longDescription: 'Reach an upscale, targeted audience through our portfolio of professional publications. Print advertising with Bay Group Media offers your business high-gloss exposure...', features: ['High-Gloss Premium Placements', 'Targeted Local Demographics', 'Strategic Distribution'], imageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop' },
+            { id: 'media-kit', name: 'Media Kit', path: '#/services/media-kit', description: 'Your blueprint for marketing success.', longDescription: 'A Bay Group Media kit is more than just a document—it is a comprehensive blueprint for your marketing success. It contains a collection of tools designed for the Bay Area market...', features: ['Detailed Reader Demographics', 'Strategic Outreach Blueprints', 'Technical Specification Guides'], imageUrl: 'https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=1760&auto=format&fit=crop' },
+            { id: 'public-relations', name: 'Public Relations', path: '#/services/public-relations', description: 'Managing your reputation with excellence.', longDescription: 'Our public relations services are designed to manage your brand\'s reputation with absolute excellence. We believe in building close, lasting relationships...', features: ['Press Release Campaigns', 'Special Event Planning', 'Brand Storytelling & Advocacy'], imageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1974&auto=format&fit=crop' }
+        ];
+
+        // --- CORE UI LOGIC ---
+        const viewContainer = document.getElementById('view-container');
+        const header = document.getElementById('main-header');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Attach mobile menu listeners
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        // Scroll logic for glass header
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('bg-white/80', 'backdrop-blur-md', 'h-16');
+                header.classList.remove('h-20');
+            } else {
+                header.classList.remove('bg-white/80', 'backdrop-blur-md', 'h-16');
+                header.classList.add('h-20');
+            }
+        });
+
+        // Dropdown populator
+        const dropdownItems = document.getElementById('dropdown-items');
+        const mobileServicesLinks = document.getElementById('mobile-services-links');
+        
+        SERVICES.forEach(s => {
+            const link = document.createElement('a');
+            link.href = s.path;
+            link.className = 'block px-5 py-3 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-900 transition-colors';
+            link.textContent = s.name;
+            dropdownItems.appendChild(link);
+
+            const mLink = document.createElement('a');
+            mLink.href = s.path;
+            mLink.className = 'block pl-4 text-slate-600 hover:text-indigo-600';
+            mLink.textContent = s.name;
+            mLink.addEventListener('click', toggleMobileMenu);
+            mobileServicesLinks.appendChild(mLink);
+        });
+
+        // --- ROUTER ---
+        async function router() {
+            const path = window.location.hash || '#/';
+            window.scrollTo(0, 0);
+            
+            if (path === '#/') renderHome();
+            else if (path === '#/services') renderServices();
+            else if (path === '#/our-magazines') renderMagazines();
+            else if (path === '#/contact') renderContact();
+            else if (path.startsWith('#/services/')) {
+                const id = path.split('/services/')[1];
+                renderServiceDetail(id);
+            }
+            updateActiveLinks(path);
+        }
+
+        function updateActiveLinks(path) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === path) {
+                    link.classList.add('text-indigo-600');
+                    link.classList.remove('text-slate-600');
+                } else {
+                    link.classList.remove('text-indigo-600');
+                    link.classList.add('text-slate-600');
+                }
+            });
+        }
+
+        // --- RENDERERS ---
+        function renderHome() {
+            viewContainer.innerHTML = `
+                <main class="flex-grow">
+                    <section class="relative h-[90vh] flex items-center overflow-hidden">
+                        <div class="absolute inset-0 bg-indigo-950">
+                            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-40 mix-blend-multiply scale-105" />
+                            <div class="absolute inset-0 bg-gradient-to-r from-indigo-950 via-indigo-950/70 to-transparent"></div>
+                        </div>
+                        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="max-w-3xl">
+                                <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-bold mb-8 backdrop-blur-sm border border-indigo-500/30 animate-reveal">17 YEARS OF EXCELLENCE</span>
+                                <h1 class="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-[0.9] animate-reveal delay-100">Elevating Brands in <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-200">The Bay.</span></h1>
+                                <p class="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-xl font-light animate-reveal delay-200">Bay Area's premier high-gloss lifestyle publications and cinematic storytellers since 2008.</p>
+                                <div class="flex flex-col sm:flex-row gap-5 animate-reveal delay-300">
+                                    <a href="#/our-magazines" class="px-10 py-5 bg-white text-indigo-900 rounded-full font-black text-lg hover:bg-indigo-50 transition-all hover:-translate-y-1 shadow-2xl text-center">Explore Our Magazines</a>
+                                    <a href="#/contact" class="px-10 py-5 bg-indigo-600/30 text-white border border-white/20 backdrop-blur-md rounded-full font-black text-lg hover:bg-white/10 transition-all hover:-translate-y-1 text-center">Book Consultation</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="bg-white py-20 relative z-20 -mt-10 rounded-t-[3rem] shadow-2xl">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                                <div class="animate-reveal">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2">17+</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-[0.2em] font-bold">Years Experience</div>
+                                </div>
+                                <div class="animate-reveal delay-100">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2">3</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-[0.2em] font-bold">Major Titles</div>
+                                </div>
+                                <div class="animate-reveal delay-200">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2">10k+</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-[0.2em] font-bold">Weekly Readers</div>
+                                </div>
+                                <div class="animate-reveal delay-200">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2">500+</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-[0.2em] font-bold">Success Stories</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            `;
+        }
+
+        function renderServices() {
+            viewContainer.innerHTML = `
+                <div class="min-h-screen bg-white">
+                    <section class="bg-indigo-950 pt-32 pb-40 text-white relative overflow-hidden">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                            <h1 class="text-6xl md:text-8xl font-black mb-8 tracking-tighter">Expertise.</h1>
+                            <p class="text-xl md:text-2xl text-indigo-200 max-w-2xl mx-auto font-light">Crafting messages that resonate with the Houston Bay Area across every medium.</p>
+                        </div>
+                    </section>
+                    <section class="pb-32 -mt-20">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                                ${SERVICES.map(s => `
+                                    <a href="${s.path}" class="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-50 flex flex-col hover:-translate-y-3 animate-reveal">
+                                        <div class="relative h-72 overflow-hidden">
+                                            <img src="${s.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-indigo-900">Premium Service</div>
+                                        </div>
+                                        <div class="p-10 flex flex-col flex-grow">
+                                            <h3 class="text-3xl font-black text-indigo-950 mb-4 tracking-tight group-hover:text-indigo-600 transition-colors">${s.name}</h3>
+                                            <p class="text-slate-500 mb-8 leading-relaxed font-medium line-clamp-3">${s.description}</p>
+                                            <div class="mt-auto flex items-center text-indigo-600 font-black text-sm uppercase tracking-widest group/link">Explore Details <div class="ml-3 w-8 h-[2px] bg-indigo-600 group-hover/link:w-12 transition-all"></div></div>
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderServiceDetail(id) {
+            const service = SERVICES.find(s => s.id === id);
+            if (!service) { window.location.hash = '#/services'; return; }
+            viewContainer.innerHTML = `
+                <div class="min-h-screen bg-white">
+                    <section class="bg-indigo-950 py-32 text-white relative overflow-hidden">
+                        <div class="absolute inset-0 z-0 opacity-20 blur-sm"><img src="${service.imageUrl}" class="w-full h-full object-cover" /></div>
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                            <nav class="flex mb-8 text-indigo-300 text-sm font-medium uppercase tracking-widest"><a href="#/services" class="hover:text-white">Services</a> <span class="mx-2">/</span> <span class="text-white">${service.name}</span></nav>
+                            <h1 class="text-5xl md:text-7xl font-bold mb-10 tracking-tight leading-tight">${service.name}</h1>
+                            <p class="text-xl md:text-2xl text-indigo-100 font-light">${service.description}</p>
+                        </div>
+                    </section>
+                    <section class="py-24 max-w-7xl mx-auto px-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                            <div class="lg:col-span-7">
+                                <h2 class="text-3xl font-bold text-indigo-950 mb-8">Service Overview</h2>
+                                <p class="text-lg text-slate-600 mb-12 leading-relaxed">${service.longDescription}</p>
+                                <div class="bg-indigo-50 p-8 rounded-3xl border border-indigo-100">
+                                    <h3 class="text-2xl font-bold text-indigo-950 mb-8">Key Capabilities</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        ${service.features.map(f => `<div class="flex items-center"><div class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center mr-4 text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span class="font-medium">${f}</span></div>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lg:col-span-5">
+                                <img src="${service.imageUrl}" class="rounded-3xl shadow-2xl mb-8" />
+                                <div id="strategy-assistant-container"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+            renderStrategyAssistant();
+        }
+
+        function renderMagazines() {
+            viewContainer.innerHTML = `
+                <div class="min-h-screen bg-slate-50 py-20">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-20">
+                        <h1 class="text-5xl font-bold text-indigo-950 mb-6">Our Magazines</h1>
+                        <p class="text-xl text-slate-600 max-w-2xl mx-auto">Bay Group Media is the proud home of three premier publications.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto px-4">
+                        ${MAGAZINES.map(m => `
+                            <div class="bg-white rounded-2xl overflow-hidden shadow-lg group">
+                                <div class="h-96 overflow-hidden"><img src="${m.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"/></div>
+                                <div class="p-8">
+                                    <h3 class="text-2xl font-bold text-indigo-950 mb-4">${m.title}</h3>
+                                    <p class="text-slate-600 mb-8">${m.description}</p>
+                                    <a href="#" class="inline-block px-6 py-2 bg-indigo-950 text-white rounded-full text-sm font-semibold">View Publication</a>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderContact() {
+            viewContainer.innerHTML = `
+                <div class="min-h-screen bg-slate-50 py-20 px-4">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
+                        <div>
+                            <h1 class="text-5xl font-bold text-indigo-950 mb-8">Let's Connect</h1>
+                            <p class="text-xl text-slate-600 mb-12">We're here to help you navigate the Bay Area media landscape.</p>
+                            <div class="space-y-6">
+                                <p class="font-bold">Seabrook Office: P.O. Box 1032, Seabrook, TX 77586</p>
+                                <p class="font-bold">Phone: 281 474 5875</p>
+                                <p class="font-bold text-indigo-600 underline">info@baygroupmedia.com</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100">
+                             <h3 class="text-2xl font-bold mb-8">Send a Message</h3>
+                             <form class="space-y-6">
+                                <input placeholder="Full Name" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200" />
+                                <input placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200" />
+                                <textarea placeholder="How can we help?" rows="5" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200"></textarea>
+                                <button type="button" class="w-full py-4 bg-indigo-900 text-white rounded-lg font-bold">Send Message</button>
+                             </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- GEMINI AI ASSISTANT ---
+        async function renderStrategyAssistant() {
+            const container = document.getElementById('strategy-assistant-container');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 mt-8">
+                    <div class="bg-indigo-900 px-6 py-4 flex items-center justify-between">
+                        <h3 class="text-white font-bold flex items-center"><span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse mr-2"></span>AI Strategy Assistant</h3>
+                        <span class="text-indigo-300 text-[10px] font-mono uppercase">Gemini AI</span>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 text-sm mb-4">Ask about print, video, or branding trends.</p>
+                        <div class="relative">
+                            <input id="ai-input" type="text" placeholder="e.g., Print ads ROI?" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 text-sm pr-12" />
+                            <button id="ai-submit" class="absolute right-2 top-1.5 p-1.5 bg-indigo-900 text-white rounded-md hover:bg-indigo-800 transition">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
+                        </div>
+                        <div id="ai-response" class="hidden mt-4 bg-indigo-50 border border-indigo-100 rounded-lg p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-line"></div>
+                    </div>
+                </div>
+            `;
+
+            const btn = document.getElementById('ai-submit');
+            const input = document.getElementById('ai-input');
+            const resBox = document.getElementById('ai-response');
+
+            btn.addEventListener('click', async () => {
+                if (!input.value.trim()) return;
+                btn.disabled = true;
+                resBox.classList.remove('hidden');
+                resBox.textContent = 'Analyzing...';
+                
+                try {
+                    const ai = new GoogleGenAI({ apiKey: "YOUR_KEY_OR_USE_ENV" }); 
+                    const response = await ai.models.generateContent({
+                        model: 'gemini-3-flash-preview',
+                        contents: `You are a Media Strategist for Bay Group Media, Seabrook, TX. Professional, local-focused. Question: ${input.value}`
+                    });
+                    resBox.textContent = response.text;
+                } catch (e) {
+                    resBox.textContent = "Please connect an API key to enable the AI assistant.";
+                }
+                btn.disabled = false;
+            });
+        }
+
+        // --- INIT ---
+        window.addEventListener('hashchange', router);
+        router();
+    </script>
+</body>
+</html>
